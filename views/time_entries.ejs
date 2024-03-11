@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Entries Summary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+<h1>Time Entries Summary</h1>
+
+<form action="/external_time_entries" method="get">
+    <label for="from">From:</label>
+    <input type="date" id="from" name="from" value="<%= from || '' %>">
+    <label for="to">To:</label>
+    <input type="date" id="to" name="to" value="<%= to || '' %>">
+    <button type="submit">Submit</button>
+</form>
+
+<% if (users  && users.length > 0) { %>
+    <% users.forEach(user => { %>
+        <h2>User: <%= user.name %></h2>
+        <table>
+            <thead>
+            <tr>
+                <th>User Name</th>
+                <th>Total hours</th>
+                <th>Payable Hours</th>
+                <th>Non-Payable Hours</th>
+                <th>Payable Hours %</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% Object.values(user.projects).forEach(user => { %>
+                <tr>
+                    <td><%= user.name %></td>
+                    <td><%= user.payable + user.nonPayable %></td>
+                    <td><%= user.payable.toFixed(2) %></td>
+                    <td><%= user.nonPayable.toFixed(2) %></td>
+                    <td>
+                        <% if (user.payable + user.nonPayable > 0) { %>
+                            <%= ((user.payable / (user.payable + user.nonPayable)) * 100).toFixed(2) %>%
+                        <% } else { %>
+                            N/A
+                        <% } %>
+                    </td>
+                </tr>
+            <% }) %>
+            </tbody>
+        </table>
+    <% }) %>
+<% } else { %>
+    <p>No data available. Please select a date range.</p>
+<% } %>
+</body>
+</html>
